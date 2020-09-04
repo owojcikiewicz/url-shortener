@@ -22,10 +22,7 @@ func (app *App) InitializeDatabase(config *config.Config) error {
 		return err
 	}
 
-	err = db.AutoMigrate(&Link{})
-	if err != nil {
-		log.Fatal(err)
-	}
+	db.AutoMigrate(&Link{})
 	app.DB = db
 
 	return nil
