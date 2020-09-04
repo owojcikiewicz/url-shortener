@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"url-shortener/app"
 	"url-shortener/config"
 )
 
 func main() {
-	config := config.LoadConfig()
-	fmt.Println(config)
+	cfg := config.LoadConfig()
+	a := &app.App{}
+	a.Run(cfg)
 }
