@@ -12,6 +12,7 @@ type Link struct {
 	gorm.Model
 	ID string
 	URL string
+	Views int
 }
 
 func (app *App) InitializeDatabase(config *config.Config) error {
