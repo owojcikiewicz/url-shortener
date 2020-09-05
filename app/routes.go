@@ -3,18 +3,64 @@ package app
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ventu-io/go-shortid"
 )
 
-func (app *App) InitializeRoutes(port string) error {
+type Data struct {
+	URL  string `json:"url"`
+	Slug string `json:"slug"`
+}
+
+func (app *App) GenerateToken() (token string, error error) {
+	sid, err := shortid.Generate()
+	fmt.Println(sid)
+
+	return sid, err
+}
+
+func (app *App) InitializeRoutes(port string, password string) error {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
-	router.POST("/upload", func(c *gin.Context) {
-		data, err := c.GetRawData()
-		if err != nil {
+	router.POST("/create", func(c *gin.Context) {
+		key := c.Request.Header.Get("Authentication")
+		data := Data{}
+		link := Link{}
+
+		if key != password {
+			c.Status(401)
 			return
 		}
-		fmt.Println(data)
+
+		err := c.BindJSON(&data)
+		if err != nil {
+			c.Status(400)
+			return
+		}
+
+		err = app.DB.Where("id = ?", data.Slug).First(&link).Error
+		if err == nil {
+			c.String(400, "Slug In Use")
+			return
+		}
+
+		if data.Slug == "" {
+			id, err := app.GenerateToken()
+			if err != nil {
+				c.Status(500)
+				return
+			}
+
+			data.Slug = id
+		}
+
+		link = Link{ID: data.Slug, URL: data.URL, Views: 0}
+		err = app.DB.Create(&link).Error
+		if err != nil {
+			c.Status(500)
+		}
+
+		c.String(200, data.Slug)
 	})
 
 	router.GET("/:id", func(c *gin.Context) {
@@ -23,7 +69,7 @@ func (app *App) InitializeRoutes(port string) error {
 
 		err := app.DB.Where("id = ?", id).First(&link).Error
 		if err != nil {
-			c.String(404, "404 - Link Not Found")
+			c.String(404, "Link Not Found")
 			return
 		}
 
@@ -33,6 +79,5 @@ func (app *App) InitializeRoutes(port string) error {
 	})
 
 	router.Run(fmt.Sprintf(":%s", port))
-
 	return nil
 }
