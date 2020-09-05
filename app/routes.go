@@ -13,7 +13,6 @@ type Data struct {
 
 func (app *App) GenerateToken() (token string, error error) {
 	sid, err := shortid.Generate()
-	fmt.Println(sid)
 
 	return sid, err
 }
