@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ventu-io/go-shortid"
+	"log"
 )
 
 type Data struct {
@@ -77,6 +78,11 @@ func (app *App) InitializeRoutes(port string, password string) error {
 		app.DB.Save(&link)
 	})
 
-	router.Run(fmt.Sprintf(":%s", port))
+	err := router.Run(fmt.Sprintf(":%s", port))
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
 	return nil
 }
