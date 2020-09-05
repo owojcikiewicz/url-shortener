@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ventu-io/go-shortid"
 	"log"
+	"net/url"
 )
 
 type Data struct {
@@ -18,6 +19,20 @@ func (app *App) GenerateToken() (token string, error error) {
 	sid, err := shortid.Generate()
 
 	return sid, err
+}
+
+func (app *App) IsValidURL(urls string) (valid bool) {
+	_, err := url.ParseRequestURI(urls)
+	if err != nil {
+		return false
+	}
+
+	u, err := url.Parse(urls)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+
+	return true
 }
 
 func (app *App) InitializeRoutes(port string, password string) error {
@@ -48,9 +63,15 @@ func (app *App) InitializeRoutes(port string, password string) error {
 			return
 		}
 
+		validURL := app.IsValidURL(data.URL)
+		if validURL == false {
+			c.Status(400)
+			return
+		}
+
 		err = app.DB.Where("id = ?", data.Slug).First(&link).Error
 		if err == nil {
-			c.String(400, "Slug In Use")
+			c.Status(409)
 			return
 		}
 
@@ -73,7 +94,7 @@ func (app *App) InitializeRoutes(port string, password string) error {
 		c.String(200, data.Slug)
 	})
 
-	router.GET("/l/:id", func(c *gin.Context) {
+	router.GET("/:id", func(c *gin.Context) {
 		link := Link{}
 		id := c.Param("id")
 
