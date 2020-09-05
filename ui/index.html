@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>URL Shortener</title>
+        <style type="text/css" media="screen">
+            @import url("assets/css/style.css");
+        </style>
+    </head>
+
+    <body>
+        <div class="shortener-page">
+            <div class="form">
+            <form class="login-form"></form>
+            <form method="POST"></form>
+                <input type="text" id = "websiteURL" placeholder="website url"/>
+                <input type="text" id = "slug" placeholder="slug (optional)"/>
+                <button type="submit" id="post-btn">Shorten</button>
+            </form>
+            </div>
+        </div>
+    </body>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="assets/js/index.js"></script>
+</html>
