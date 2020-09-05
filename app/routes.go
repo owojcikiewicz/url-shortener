@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/ventu-io/go-shortid"
 	"log"
@@ -21,11 +22,18 @@ func (app *App) GenerateToken() (token string, error error) {
 
 func (app *App) InitializeRoutes(port string, password string) error {
 	gin.SetMode(gin.ReleaseMode)
+
 	router := gin.Default()
 	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods: []string{"GET", "POST"},
+		AllowHeaders: []string{"Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization"},
+	}))
+	router.Use(static.Serve("/", static.LocalFile("ui/", false)))
 
 	router.POST("/create", func(c *gin.Context) {
-		key := c.Request.Header.Get("Authentication")
+		key := c.Request.Header.Get("Authorization")
 		data := Data{}
 		link := Link{}
 
@@ -65,7 +73,7 @@ func (app *App) InitializeRoutes(port string, password string) error {
 		c.String(200, data.Slug)
 	})
 
-	router.GET("/:id", func(c *gin.Context) {
+	router.GET("/l/:id", func(c *gin.Context) {
 		link := Link{}
 		id := c.Param("id")
 
