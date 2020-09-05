@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/ventu-io/go-shortid"
 	"log"
@@ -21,6 +22,7 @@ func (app *App) GenerateToken() (token string, error error) {
 func (app *App) InitializeRoutes(port string, password string) error {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	router.POST("/create", func(c *gin.Context) {
 		key := c.Request.Header.Get("Authentication")
