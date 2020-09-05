@@ -16,7 +16,7 @@ func (app *App) Run(config *config.Config) {
 		log.Fatal("A database error occurred: ", err)
 	}
 
-	err = app.InitializeRoutes(config.Port)
+	err = app.InitializeRoutes(config.Port, config.Password)
 	if err != nil {
 		log.Fatal("A route error occurred: ", err)
 	}
