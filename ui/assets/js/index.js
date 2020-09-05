@@ -26,17 +26,22 @@ button.addEventListener("click", async _ => {
             }
         })
         .then(res => {
-            if (res.status == 409) {
-                swal("Error", "The provided slug is already in use!", "error");
-            };
-
             if (res.status == 200) {
                 swal("Success!", "http://localhost:5000/" + res.data, "success");
             };
         })
         .catch(err => {
-            console.log(err);
-            swal("Error", "An error has occured!", "error");
+            if (err.response.status == 409) {
+                swal("Error", "The provided slug is already in use!", "error");
+                return
+            };
+
+            if (err.response.status == 500) {
+                swal("Error", "An internal server error occurred!", "error");
+                return
+            }; 
+
+            swal("Error", "An error has occurred!", "error");
         });
     };
 });
