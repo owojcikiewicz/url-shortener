@@ -1,4 +1,5 @@
 const button = document.getElementById("post-btn");
+const websiteInput = document.getElementById("websiteURL")
 
 function validateURL(url) {
     var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
@@ -6,6 +7,16 @@ function validateURL(url) {
 
     return regexp.test(url);
 }
+
+websiteInput.addEventListener("input", async _ => {
+    let URL = websiteInput.value;
+    
+    if (!validateURL(URL) || (!URL.startsWith("https://") && !URL.startsWith("http://"))) {
+        websiteInput.classList.add("error");
+    } else {
+        websiteInput.classList.remove("error");
+    }
+})
 
 button.addEventListener("click", async _ => {
     let URL = document.getElementById("websiteURL").value;
